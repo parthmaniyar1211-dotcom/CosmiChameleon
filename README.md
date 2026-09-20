@@ -4,7 +4,7 @@
 
 An immersive 3D technology portfolio and product showcase built for **CosmiChameleon** — an engineering studio crafting intelligent software, production AI systems, autonomous agents, and adaptive digital experiences.
 
-🌐 **Live Website**: [https://cosmichameleon.surge.sh](https://cosmichameleon.surge.sh)
+🌐 **Live Website**: [https://parthmaniyar1211-dotcom.github.io/CosmiChameleon/](https://parthmaniyar1211-dotcom.github.io/CosmiChameleon/)
 
 ---
 
