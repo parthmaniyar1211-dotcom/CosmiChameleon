@@ -26,6 +26,7 @@ dist-ssr
 # Scratch & Test scripts
 capture-sections.cjs
 test-portfolio.cjs
+test-live-deployment.cjs
 
 # Deployment & Environment
 .vercel
