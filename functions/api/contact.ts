@@ -47,7 +47,7 @@ function sanitizeText(str: string): string {
 }
 
 function getCorsHeaders(origin: string | null, allowedOrigin?: string): Record<string, string> {
-  const allowed = allowedOrigin || "https://cosmichameleon.com";
+  const allowed = allowedOrigin || "https://cosmichameleon.pages.dev";
   const matched = origin && (origin === allowed || origin.includes("localhost") || origin.endsWith(".pages.dev"))
     ? origin
     : allowed;
