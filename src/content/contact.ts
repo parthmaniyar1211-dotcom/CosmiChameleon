@@ -1,28 +1,24 @@
-export const projectTypes = [
-  "Website",
+export const projectInterests = [
+  "AI Solutions & Agents",
+  "Business Automation",
   "Custom Software",
-  "AI Solution",
-  "Automation",
-  "E-Commerce",
-  "UI/UX",
+  "Web Applications",
+  "SaaS Products",
   "Digital Transformation",
-  "Custom Product",
+  "E-Commerce Technology",
+  "UI/UX Systems",
   "Other"
 ] as const;
 
-export type ProjectType = typeof projectTypes[number];
+export type ProjectInterest = typeof projectInterests[number];
 
-export const budgetRanges = [
-  "< $5,000",
-  "$5,000 - $15,000",
-  "$15,000 - $35,000",
-  "$35,000 - $75,000",
-  "$75,000+"
-] as const;
+// Alias for backwards compatibility
+export const projectTypes = projectInterests;
+export type ProjectType = ProjectInterest;
 
 export const contactInfo = {
   directEmail: "hello@cosmichameleon.com",
   location: "Global Studio",
-  availability: "Currently accepting select projects for Q2/Q3",
+  availability: "Accepting select engineering & digital product initiatives",
   responseTime: "Inquiries reviewed within 24 business hours"
 };

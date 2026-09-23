@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { CheckCircle, AlertCircle, ArrowRight, ShieldCheck, Mail, Building, User, Phone, DollarSign } from "lucide-react";
-import { projectTypes, budgetRanges, type ProjectType } from "../../content/contact";
+import { CheckCircle, AlertCircle, ArrowRight, ShieldCheck, Mail, Building, User, Phone, Loader2 } from "lucide-react";
+import { projectInterests, type ProjectInterest } from "../../content/contact";
 import { Button } from "./Button";
 import { GlassPanel } from "./GlassPanel";
 
@@ -9,16 +9,16 @@ interface FormState {
   company: string;
   email: string;
   phone: string;
-  projectType: ProjectType;
-  budgetRange: string;
-  description: string;
+  interest: ProjectInterest;
+  message: string;
+  website_hp: string; // Anti-spam honeypot (must stay blank)
 }
 
 interface FormErrors {
   name?: string;
   company?: string;
   email?: string;
-  description?: string;
+  message?: string;
 }
 
 export const ContactForm: React.FC = () => {
@@ -27,14 +27,15 @@ export const ContactForm: React.FC = () => {
     company: "",
     email: "",
     phone: "",
-    projectType: "Website",
-    budgetRange: "$15,000 - $35,000",
-    description: "",
+    interest: "AI Solutions & Agents",
+    message: "",
+    website_hp: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const validate = (): boolean => {
     const nextErrors: FormErrors = {};
@@ -47,6 +48,8 @@ export const ContactForm: React.FC = () => {
 
     if (!formData.company.trim()) {
       nextErrors.company = "Company / organization name is required.";
+    } else if (formData.company.trim().length > 100) {
+      nextErrors.company = "Company name must be under 100 characters.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -56,40 +59,84 @@ export const ContactForm: React.FC = () => {
       nextErrors.email = "Please enter a valid email address.";
     }
 
-    if (!formData.description.trim()) {
-      nextErrors.description = "Please provide a brief description of your project or problem.";
-    } else if (formData.description.trim().length < 15) {
-      nextErrors.description = "Please describe in a bit more detail (at least 15 characters).";
-    } else if (formData.description.trim().length > 2500) {
-      nextErrors.description = "Description is too long (maximum 2,500 characters).";
+    if (!formData.message.trim()) {
+      nextErrors.message = "Please provide an overview of your project or technical problem.";
+    } else if (formData.message.trim().length < 15) {
+      nextErrors.message = "Please describe in a bit more detail (minimum 15 characters).";
+    } else if (formData.message.trim().length > 2500) {
+      nextErrors.message = "Message exceeds the maximum limit of 2,500 characters.";
     }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError(null);
+
     if (!validate()) return;
+
+    // Honeypot check: If the hidden field is filled, silently discard
+    if (formData.website_hp.trim() !== "") {
+      setSubmitted(true);
+      return;
+    }
 
     setIsSubmitting(true);
 
-    // Persist locally so inquiries aren't lost and can be inspected
     try {
-      const existingSubmissions = JSON.parse(localStorage.getItem("cosmichameleon_inquiries") || "[]");
-      existingSubmissions.push({
-        ...formData,
-        submittedAt: new Date().toISOString()
-      });
-      localStorage.setItem("cosmichameleon_inquiries", JSON.stringify(existingSubmissions));
-    } catch {
-      // Storage unavailable or disabled
-    }
+      // Dynamic API base URL configuration:
+      // Uses environment variable VITE_API_BASE_URL if set, otherwise relative /api/contact for universal hosting
+      const rawBase = import.meta.env.VITE_API_BASE_URL;
+      const apiEndpoint = rawBase
+        ? `${rawBase.replace(/\/+$/, "")}/api/contact`
+        : "/api/contact";
 
-    setTimeout(() => {
+      const payload = {
+        name: formData.name.trim(),
+        company: formData.company.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        interest: formData.interest,
+        message: formData.message.trim(),
+        website_hp: formData.website_hp,
+        source: "CosmiChameleon Website",
+        timestamp: new Date().toISOString()
+      };
+
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json().catch(() => null);
+
+      if (response.ok && result?.success !== false) {
+        // Success: Reset form and show confirmation
+        setSubmitted(true);
+        setFormData({
+          name: "",
+          company: "",
+          email: "",
+          phone: "",
+          interest: "AI Solutions & Agents",
+          message: "",
+          website_hp: "",
+        });
+      } else {
+        const errorMsg = result?.error || result?.message || "Unable to send inquiry. Please try again or reach out directly to hello@cosmichameleon.com.";
+        setApiError(errorMsg);
+      }
+    } catch {
+      setApiError("Unable to reach the inquiry server. Please verify your network connection or contact hello@cosmichameleon.com directly.");
+    } finally {
       setIsSubmitting(false);
-      setSubmitted(true);
-    }, 600);
+    }
   };
 
   if (submitted) {
@@ -100,35 +147,18 @@ export const ContactForm: React.FC = () => {
         </div>
 
         <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">
-          Thanks for reaching out.
+          Inquiry received. We’ll be in touch.
         </h3>
 
-        <p className="text-neutral-300 leading-relaxed mb-6 font-medium">
-          Your project inquiry has been captured locally. Real email delivery will be connected later.
+        <p className="text-neutral-300 leading-relaxed mb-6 font-normal">
+          Thank you for reaching out to CosmiChameleon. Our engineering team reviews all incoming technical inquiries within 24 business hours.
         </p>
-
-        <div className="p-4 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-neutral-400 text-left mb-8 max-w-md mx-auto space-y-1">
-          <div><strong className="text-neutral-200">Name:</strong> {formData.name}</div>
-          <div><strong className="text-neutral-200">Company:</strong> {formData.company}</div>
-          <div><strong className="text-neutral-200">Email:</strong> {formData.email}</div>
-          <div><strong className="text-neutral-200">Type:</strong> {formData.projectType}</div>
-          <div><strong className="text-neutral-200">Budget:</strong> {formData.budgetRange}</div>
-        </div>
 
         <Button
           variant="secondary"
           size="md"
           onClick={() => {
             setSubmitted(false);
-            setFormData({
-              name: "",
-              company: "",
-              email: "",
-              phone: "",
-              projectType: "Website",
-              budgetRange: "$15,000 - $35,000",
-              description: "",
-            });
           }}
         >
           Submit Another Inquiry
@@ -139,7 +169,31 @@ export const ContactForm: React.FC = () => {
 
   return (
     <GlassPanel variant="elevated" className="p-6 sm:p-10 max-w-3xl mx-auto">
+      {apiError && (
+        <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="font-semibold block">Submission Error</span>
+            <p className="text-xs text-red-300/90">{apiError}</p>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} noValidate className="space-y-6">
+        {/* Anti-spam honeypot field - visually hidden */}
+        <div className="hidden" aria-hidden="true" style={{ display: "none" }}>
+          <label htmlFor="form-website-hp">Leave this empty</label>
+          <input
+            id="form-website-hp"
+            name="website_hp"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={formData.website_hp}
+            onChange={(e) => setFormData({ ...formData, website_hp: e.target.value })}
+          />
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Name */}
           <div>
@@ -170,7 +224,7 @@ export const ContactForm: React.FC = () => {
           {/* Company */}
           <div>
             <label htmlFor="form-company" className="block text-xs font-mono uppercase tracking-wider text-neutral-300 mb-2">
-              Company / Entity <span className="text-accent-cyan">*</span>
+              Company / Organization <span className="text-accent-cyan">*</span>
             </label>
             <div className="relative">
               <Building className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-500" />
@@ -240,78 +294,51 @@ export const ContactForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Project Type Selection */}
+        {/* Project / Interest Selection */}
         <div>
           <label className="block text-xs font-mono uppercase tracking-wider text-neutral-300 mb-2.5">
-            Project Type <span className="text-accent-cyan">*</span>
+            Project / Interest <span className="text-accent-cyan">*</span>
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {projectTypes.map((type) => {
-              const selected = formData.projectType === type;
+            {projectInterests.map((interest) => {
+              const selected = formData.interest === interest;
               return (
                 <button
                   type="button"
-                  key={type}
-                  onClick={() => setFormData({ ...formData, projectType: type })}
+                  key={interest}
+                  onClick={() => setFormData({ ...formData, interest })}
                   className={`px-3 py-2 rounded-xl text-xs font-medium text-left transition-all border ${
                     selected
                       ? "bg-accent-cyan/15 text-accent-cyan border-accent-cyan/50 shadow-sm shadow-accent-cyan/20"
                       : "bg-white/[0.03] text-neutral-300 border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12]"
                   }`}
                 >
-                  {type}
+                  {interest}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Budget Range */}
+        {/* Project Message */}
         <div>
-          <label className="block text-xs font-mono uppercase tracking-wider text-neutral-300 mb-2.5">
-            Target Budget Range <span className="text-accent-cyan">*</span>
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {budgetRanges.map((range) => {
-              const selected = formData.budgetRange === range;
-              return (
-                <button
-                  type="button"
-                  key={range}
-                  onClick={() => setFormData({ ...formData, budgetRange: range })}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
-                    selected
-                      ? "bg-white text-cosmic-950 font-bold border-white"
-                      : "bg-white/[0.04] text-neutral-400 border-white/[0.06] hover:text-neutral-200 hover:border-white/[0.15]"
-                  }`}
-                >
-                  <DollarSign className="w-3 h-3 inline mr-0.5" />
-                  {range}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Project Description */}
-        <div>
-          <label htmlFor="form-desc" className="block text-xs font-mono uppercase tracking-wider text-neutral-300 mb-2">
-            Project Overview & Goals <span className="text-accent-cyan">*</span>
+          <label htmlFor="form-message" className="block text-xs font-mono uppercase tracking-wider text-neutral-300 mb-2">
+            Message &amp; Project Overview <span className="text-accent-cyan">*</span>
           </label>
           <textarea
-            id="form-desc"
+            id="form-message"
             rows={4}
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            placeholder="Tell us about the problem you are solving, your current systems, target timeline, and any specific requirements..."
+            value={formData.message}
+            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+            placeholder="Describe your technical initiative, existing architecture, timeline, and requirements..."
             className={`w-full p-4 rounded-xl bg-cosmic-950/70 border text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-accent-cyan transition-colors resize-y ${
-              errors.description ? "border-red-500/70" : "border-white/[0.1] hover:border-white/[0.2]"
+              errors.message ? "border-red-500/70" : "border-white/[0.1] hover:border-white/[0.2]"
             }`}
           />
-          {errors.description && (
+          {errors.message && (
             <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">
               <AlertCircle className="w-3.5 h-3.5" />
-              {errors.description}
+              {errors.message}
             </p>
           )}
         </div>
@@ -320,7 +347,7 @@ export const ContactForm: React.FC = () => {
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-neutral-400">
             <ShieldCheck className="w-4 h-4 text-accent-cyan" />
-            <span>Encrypted transmission. No spam or unsolicited marketing.</span>
+            <span>Encrypted transmission. No marketing solicitations.</span>
           </div>
 
           <Button
@@ -328,9 +355,9 @@ export const ContactForm: React.FC = () => {
             size="lg"
             variant="primary"
             disabled={isSubmitting}
-            icon={<ArrowRight className="w-4 h-4" />}
+            icon={isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
           >
-            {isSubmitting ? "Capturing..." : "Send Project Inquiry"}
+            {isSubmitting ? "Sending Inquiry..." : "Send Inquiry"}
           </Button>
         </div>
       </form>

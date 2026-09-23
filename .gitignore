@@ -31,3 +31,6 @@ test-portfolio.cjs
 .vercel
 .env
 .env*.local
+server/data/
+data/
+

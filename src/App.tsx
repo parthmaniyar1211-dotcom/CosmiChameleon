@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useScrollProgress } from "./hooks/useScrollProgress";
-import { SharedCanvas } from "./components/three/SharedCanvas";
+import { StaticFallback } from "./components/three/StaticFallback";
 import { Navigation } from "./components/ui/Navigation";
 import { ProjectModal } from "./components/ui/ProjectModal";
 import { Hero } from "./components/sections/Hero";
@@ -16,6 +16,11 @@ import { FinalCTA } from "./components/sections/FinalCTA";
 import { Contact } from "./components/sections/Contact";
 import { Footer } from "./components/sections/Footer";
 import type { ProjectItem } from "./content/projects";
+
+// Lazy-load the heavy 3D WebGL canvas to avoid blocking the initial DOM render
+const SharedCanvas = lazy(() =>
+  import("./components/three/SharedCanvas").then((m) => ({ default: m.SharedCanvas }))
+);
 
 export function App() {
   const { activeSection } = useScrollProgress();
@@ -54,13 +59,19 @@ export function App() {
       />
 
       {/* ONE Shared 3D Canvas across the entire continuous scroll journey */}
-      <SharedCanvas
-        activeServiceIndex={activeServiceIndex}
-        activeProductIndex={activeProductIndex}
-        activeProjectIndex={activeProjectIndex}
-        activeTechIndex={activeTechIndex}
-        isStandardExperience={isStandardExperience}
-      />
+      {isStandardExperience ? (
+        <StaticFallback />
+      ) : (
+        <Suspense fallback={<StaticFallback />}>
+          <SharedCanvas
+            activeServiceIndex={activeServiceIndex}
+            activeProductIndex={activeProductIndex}
+            activeProjectIndex={activeProjectIndex}
+            activeTechIndex={activeTechIndex}
+            isStandardExperience={isStandardExperience}
+          />
+        </Suspense>
+      )}
 
       {/* Real HTML Content Layers */}
       <main className="relative z-10">

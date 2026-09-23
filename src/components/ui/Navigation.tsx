@@ -117,10 +117,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   </a>
                 );
               })}
-            </div>
-
-            {/* Desktop Experience Toggle */}
-            <div className="hidden sm:flex items-center gap-2.5">
+              <div className="h-4 w-[1px] bg-white/[0.1] mx-1" />
               <ExperienceToggle
                 isStandard={isStandardExperience}
                 onToggle={onToggleStandardExperience}

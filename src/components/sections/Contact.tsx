@@ -1,7 +1,9 @@
 import React from "react";
 import { ContactForm } from "../ui/ContactForm";
 import { contactInfo } from "../../content/contact";
+import { studioSocialPresence } from "../../content/projects";
 import { Mail, Clock, MapPin } from "lucide-react";
+import { InstagramIcon, LinkedInIcon } from "../ui/SocialIcons";
 
 export const Contact: React.FC = () => {
   return (
@@ -14,21 +16,21 @@ export const Contact: React.FC = () => {
         {/* Section Header */}
         <div className="max-w-3xl mb-12 text-center mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono tracking-widest uppercase bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20 mb-4">
-            Get in Touch
+            Contact CosmiChameleon
           </div>
           <h2
             id="contact-heading"
             className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-[1.1] mb-4"
           >
-            Interested in building something similar?
+            Initiate a Technical Discussion
           </h2>
           <p className="text-neutral-300 text-base sm:text-lg max-w-xl mx-auto">
-            Whether you need a custom software platform, an AI operational system, or a high-performance web experience, reach out to discuss your technical initiatives.
+            Whether you are evaluating a custom software architecture, deploying an AI agent system, or building an enterprise digital product, get in touch with our team.
           </p>
         </div>
 
-        {/* Studio Service Guarantees Bar */}
-        <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+        {/* Studio Direct Channels & Guarantees */}
+        <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs text-neutral-300">
             <Clock className="w-4 h-4 text-accent-cyan shrink-0" />
             <span>{contactInfo.responseTime}</span>
@@ -45,9 +47,33 @@ export const Contact: React.FC = () => {
           </div>
         </div>
 
+        {/* CosmiChameleon Official Social Bar */}
+        <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-center gap-4 mb-8 text-xs font-mono">
+          <a
+            href={studioSocialPresence.instagram.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/[0.03] text-neutral-300 hover:text-white hover:bg-white/[0.07] border border-white/[0.08] transition-colors"
+          >
+            <InstagramIcon className="w-3.5 h-3.5 text-pink-400" />
+            <span>{studioSocialPresence.instagram.label}</span>
+          </a>
+
+          <a
+            href={studioSocialPresence.linkedin.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white/[0.03] text-neutral-300 hover:text-white hover:bg-white/[0.07] border border-white/[0.08] transition-colors"
+          >
+            <LinkedInIcon className="w-3.5 h-3.5 text-accent-cyan" />
+            <span>{studioSocialPresence.linkedin.label}</span>
+          </a>
+        </div>
+
         {/* Validated Inquiry Form */}
         <ContactForm />
       </div>
     </section>
   );
 };
+

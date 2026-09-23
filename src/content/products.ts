@@ -2,6 +2,7 @@ export interface ProductItem {
   id: string;
   badge: string;
   title: string;
+  category: string;
   headline: string;
   description: string;
   features: { label: string; detail: string }[];
@@ -17,91 +18,94 @@ export const productsData: ProductItem[] = [
     id: "shieldscope",
     badge: "LAB PRODUCT 01",
     title: "ShieldScope",
-    headline: "Continuous website security posture, vulnerability auditing, and attack surface intelligence.",
+    category: "Website Security & Intelligence Platform",
+    headline: "Automated website security auditing, certificate telemetry, and attack surface intelligence.",
     description:
-      "An automated web security intelligence engine designed to detect configuration drift, monitor SSL/TLS certificates, scan for exposed vulnerabilities, and enforce perimeter defense across web assets.",
-    tags: ["Perimeter Defense", "CVE Scans", "SSL Auditing", "Zero-Day Alerts"],
+      "A web security intelligence platform providing automated surface discovery across SSL/TLS certificates, open ports, security headers, vulnerability detection, and DNS health.",
+    tags: ["Surface Auditing", "SSL/TLS Telemetry", "Port Scanning", "DNS Verification"],
     liveUrl: "https://shieldscope.netlify.app/",
     features: [
       {
         label: "Continuous Surface Discovery",
-        detail: "Crawls domain perimeters, public subdomains, open ports, and API endpoints around the clock."
+        detail: "Automates domain perimeter audits, public subdomains, open ports, and API endpoints."
       },
       {
-        label: "Vulnerability & CVE Correlation",
-        detail: "Cross-references active software libraries against live national vulnerability databases."
+        label: "Security Header Verification",
+        detail: "Audits CSP policies, HSTS configuration, X-Frame-Options, and referrer headers."
       },
       {
-        label: "SSL/TLS & Header Enforcement",
-        detail: "Monitors certificate expiration, cipher suites, HSTS preloading, and CSP policy health."
+        label: "SSL/TLS & Certificate Analysis",
+        detail: "Monitors certificate validity, cipher suites, expiration dates, and configuration integrity."
       },
       {
-        label: "Automated Incident Alerting",
-        detail: "Dispatches actionable mitigation playbooks directly into Slack, Discord, or security webhooks."
+        label: "DNS & Configuration Audits",
+        detail: "Correlates record hygiene, MX records, and perimeter configuration state."
       }
     ],
-    ctaText: "Open Product ↗",
+    ctaText: "Open ShieldScope",
     visualType: "security-platform"
   },
   {
     id: "mailx",
     badge: "LAB PRODUCT 02",
     title: "MailX",
-    headline: "High-throughput transactional email infrastructure with intelligent deliverability orchestration.",
+    category: "Email Automation Platform",
+    headline: "High-throughput transactional email infrastructure and deliverability orchestration.",
     description:
-      "A modern transactional and automated email delivery engine engineered to handle dynamic templating, deliverability protection, bounce mitigation, and event-driven communication pipelines.",
-    tags: ["Dynamic Templating", "DKIM/DMARC", "Event Pipeline", "Inbox Routing"],
+      "A transactional and automated email delivery engine engineered for dynamic template compilation, deliverability protection, bounce mitigation, and event-driven communication flows.",
+    tags: ["Dynamic Templating", "DKIM/DMARC", "Event Pipeline", "Inbox Deliverability"],
     workflowNodes: ["Event Ingest", "Template Render", "DKIM Sign", "Reputation Guard", "Inbox Delivery"],
     liveUrl: "https://mailx-mu.vercel.app/",
     features: [
       {
         label: "Dynamic Template Compilation",
-        detail: "Compiles personalized, responsive emails instantly with type-safe variable injection."
+        detail: "Compiles personalized, responsive transactional emails with dynamic variable injection."
       },
       {
         label: "Deliverability & Reputation Guard",
-        detail: "Continuously tracks IP warmth, bounce rates, and spam trap signals to protect sender scores."
+        detail: "Monitors domain reputation, SPF/DKIM validation, and bounce mitigation protocols."
       },
       {
-        label: "Event-Driven Drip Orchestration",
-        detail: "Triggers chained sequences based on real-time user behavior, app webhooks, and billing events."
+        label: "Event-Driven Automation Sequences",
+        detail: "Triggers chained email dispatches based on user lifecycle triggers and real-time app events."
       },
       {
         label: "Unified Telemetry & Webhooks",
-        detail: "Streams real-time delivery confirmations, opens, clicks, and bounce logs to your data warehouse."
+        detail: "Streams real-time delivery status, opens, clicks, and failure event webhooks."
       }
     ],
-    ctaText: "Open Product ↗",
+    ctaText: "Open MailX",
     visualType: "email-automation"
   },
   {
     id: "voice-agent",
     badge: "LAB PRODUCT 03",
     title: "Voice Agent",
-    headline: "Real-time bidirectional AI voice interaction platform for automated operations and caller support.",
+    category: "AI Voice Interaction Platform",
+    headline: "Real-time bidirectional AI voice interaction platform for operations and customer dialogue.",
     description:
-      "An ultra-low-latency voice conversational platform capable of holding fluid, natural customer dialogues, executing multi-step business actions in real time, and bridging directly to phone networks.",
-    tags: ["Low Latency", "Neural TTS", "Streaming ASR", "SIP & WebRTC"],
+      "A conversational voice platform capable of natural dialogue, streaming speech recognition, real-time tool execution, and browser or telephone audio bridging.",
+    tags: ["Bidirectional Audio", "Neural Speech", "Streaming ASR", "Tool Calling"],
     liveUrl: "https://voice-agent-lac-ten.vercel.app/login",
     features: [
       {
-        label: "Streaming Speech & Acoustic Parsing",
-        detail: "Ultra-fast speech recognition and neural synthesis designed for natural human conversational cadences."
+        label: "Streaming Speech & Synthesis",
+        detail: "Low-latency streaming speech recognition and acoustic synthesis designed for natural cadences."
       },
       {
-        label: "Intelligent Interruption Handling",
-        detail: "Seamlessly detects user speech mid-sentence, stops talking immediately, and re-evaluates intent."
+        label: "Conversational Turn-Taking",
+        detail: "Detects user interruptions mid-speech and adapts dialogue state dynamically."
       },
       {
         label: "Autonomous Business Tool Calling",
-        detail: "Queries databases, schedules calendar slots, processes orders, and updates CRMs during calls."
+        detail: "Executes CRM updates, calendar scheduling, and structured business actions during calls."
       },
       {
         label: "Telephony & WebRTC Bridges",
-        detail: "Integrates with existing PBX, Twilio, and mobile or web browser audio streams out of the box."
+        detail: "Connects to browser audio streams and telephony gateways with unified call state."
       }
     ],
-    ctaText: "Open Product ↗",
+    ctaText: "Open Voice Agent",
     visualType: "voice-agent"
   }
 ];
